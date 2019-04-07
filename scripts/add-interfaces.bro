@@ -20,7 +20,7 @@ type AddedFields: record {
 function interface_ext_func(path: string): AddedFields
 	{
 	if ( Cluster::nodes[Cluster::node]?$interface )
-		return AddedFields($interface = Cluster::nodes[Cluster::node]?$interface);
+		return AddedFields($interface = Cluster::nodes[Cluster::node]$interface);
 	}
 
 event bro_init() &priority=-3
