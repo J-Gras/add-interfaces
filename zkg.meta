@@ -3,4 +3,4 @@ description = Adds cluster node's interface to logs.
 tags = log, logging, conn, add interface, add worker
 script_dir = scripts
 depends =
-	bro >=2.5
+	zeek >=2.5
