@@ -21,6 +21,8 @@ function interface_ext_func(path: string): AddedFields
 	{
 	if ( Cluster::nodes[Cluster::node]?$interface )
 		return AddedFields($interface = Cluster::nodes[Cluster::node]$interface);
+	else
+		return AddedFields($interface = fmt("%s:unknown-interface", Cluster::node));
 	}
 
 event bro_init() &priority=-3
