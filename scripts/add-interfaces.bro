@@ -23,7 +23,7 @@ function interface_ext_func(path: string): AddedFields
 		return AddedFields($interface = Cluster::nodes[Cluster::node]$interface);
 	}
 
-event bro_init() &priority=-3
+event zeek_init() &priority=-3
 	{
 	# Add ext_func to log streams
 	for ( id in Log::active_streams )
@@ -39,7 +39,7 @@ event bro_init() &priority=-3
 
 @else
 
-event bro_init()
+event zeek_init()
 	{
 	Reporter::warning("Interfaces are not added to logs (not in cluster mode)!");
 	}
