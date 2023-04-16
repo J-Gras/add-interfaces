@@ -1,4 +1,4 @@
-##! Adds cluster node's interface to logs.
+##! Adds node's interface to logs.
 
 module AddInterfaces;
 
@@ -11,7 +11,7 @@ export {
 	const include_logs: set[Log::ID] = { Conn::LOG } &redef;
 }
 
-@if ( Cluster::is_enabled() )
+global interface_name: string;
 
 type AddedFields: record {
 	interface: string &log;
@@ -19,14 +19,28 @@ type AddedFields: record {
 
 function interface_ext_func(path: string): AddedFields
 	{
-	if ( Cluster::nodes[Cluster::node]?$interface )
-		return AddedFields($interface = Cluster::nodes[Cluster::node]$interface);
-	else
-		return AddedFields($interface = fmt("%s:unknown-interface", Cluster::node));
+	return AddedFields($interface=interface_name);
 	}
 
 event zeek_init() &priority=-3
 	{
+	local ps = packet_source();
+	if ( ps?$live && ps$live && ps?$path )
+		interface_name = ps$path;
+
+	# This is backwards compat such that non-workers within a
+	# cluster add "<node>:unknown-interface" to log entries
+	# they generate. It's the only reason we depend on the
+	# cluster framework at this point.
+	if ( |interface_name| == 0 && Cluster::is_enabled() )
+		interface_name = fmt("%s:unknown-interface", Cluster::node);
+
+	if ( |interface_name| == 0 )
+		{
+		Reporter::warning("Interfaces are not added to logs!");
+		return;
+		}
+
 	# Add ext_func to log streams
 	for ( id in Log::active_streams )
 		{
@@ -38,12 +52,3 @@ event zeek_init() &priority=-3
 			}
 		}
 	}
-
-@else
-
-event zeek_init()
-	{
-	Reporter::warning("Interfaces are not added to logs (not in cluster mode)!");
-	}
-
-@endif
