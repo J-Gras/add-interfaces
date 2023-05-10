@@ -11,7 +11,7 @@ export {
 	const include_logs: set[Log::ID] = { Conn::LOG } &redef;
 }
 
-global interface_name: string;
+global interface_name = "";
 
 type AddedFields: record {
 	interface: string &log;
